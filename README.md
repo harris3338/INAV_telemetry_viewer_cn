@@ -1,4 +1,47 @@
-## You may want to check this https://github.com/RomanLut/android-taranis-smartport-telemetry fork for bugfixes and new features
+# Android Taranis SmartPort Telemetry / Roman Lut
+
+This is fork of CrazyDude's excellent application https://github.com/CrazyDude1994/android-taranis-smartport-telemetry
+
+![](doc/screenshot.jpg) 
+
+This version contains support of ROTG01/ROTG02 video receivers with recording:
+
+![](doc/uvc_video_tx16s.jpg) 
+
+Latest build is available in Releases: https://github.com/RomanLut/android-taranis-smartport-telemetry/releases
+
+I am contributing most bugsfixes and enchancements to Crasydude's repository. But due to significant differences in UI structure, some features are not merged or merged with delay:
+- UVC video support, video recording (DVR)
+- sensors: Airspeed, Vertical speed, Altitude MSL, Throttle, Cell Voltage, Telemetry Rate, Distance to home, Travelled distance
+- CRSF link quality sensors 
+- RC Channels display (8ch for Mavlink v1, 18ch for Mavlink v2, 16 channels for CRSF<sup>1</sup>)
+- better support for CRSF and LTM telemetry
+- connection status voice messages
+- USB VCP cable connection to radios
+- topological map
+- GPX export
+- KML export
+- context menu for deleting and renaming logs
+-  UI interface enchancements
+- improved stability and bug fixes
+
+<sup>1</sup> *Channels are displayed with CRSF protocol if they are sent with telemetry. It works with this PR which allows to connect directly to Express LRS TX module:* https://github.com/ExpressLRS/ExpressLRS/pull/2018
+
+# Routing telemetry to the application
+
+Multiple possibilities exits.
+
+- route telemetry to the bluetooth module in the radios which have bluetooth installed
+- install bluetooth module in the radio yourself
+- use Crossfire TX with bluetooth module
+- sniff telemetry from S.PORT pin and route to HC-06 / HM-10 module ( see instructions below )
+- since version 1.2: route telemetry to USB-C port of the radio ( System->USB-VCP->Telemetry Mirror ) and connect to the phone using OTG cable. Note that USB-C<->USB-C cable may not work; I had to use OTG adapter + cable.
+- install ELRS build with BLE telemetry output: https://github.com/ExpressLRS/ExpressLRS/pull/2018 
+- install ELRS build with Bluetooth telemetry output: https://github.com/ExpressLRS/ExpressLRS/pull/2101
+
+
+Below is original Readme.md:
+
 
 # Android Taranis SmartPort Telemetry Viewer
 
@@ -68,7 +111,6 @@ or you can donate to my patreon: https://www.patreon.com/android_rc_telemetry
 
 # Special thanks
 hyperion11 - Ardupilot support
-RomanLut - fixes, new features
 
 Alexey Stankevich - initial testing, feedback
 

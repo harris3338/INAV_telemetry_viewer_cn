@@ -36,10 +36,6 @@ class GoogleLine(private val polyline: Polyline) : MapLine {
         polyline.points = points
     }
 
-    override fun setPoints(points: List<Position>) {
-        polyline.points = ArrayList(points.map { it.toLatLng() })
-    }
-
     override fun removeAt(index: Int) {
         val points = polyline.points
         points.removeAt(index)
