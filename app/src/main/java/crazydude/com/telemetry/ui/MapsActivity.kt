@@ -1309,7 +1309,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         cell_voltage.text = "-"
         this.lastCellVoltage = 0.0f;
         throttle.text = "-"
-        tlmRate.text = "-"
+        tlmRate.text = "0 b/s"
     }
 
     private fun bleCheck() =
@@ -1960,6 +1960,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             replayFileString = null
         }
         this.sensorTimeoutManager.disableTimeouts()
+        this.tlmRate.setAlpha(0.5f);
         lastGPS = Position(0.0, 0.0);
         hasGPSFix = false;
         marker?.remove()
@@ -1992,6 +1993,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         headingPolyline?.remove()
         headingPolyline = null;
         this.sensorTimeoutManager.enableTimeouts()
+        this.tlmRate.setAlpha(1.0f);
         lastGPS = Position(0.0, 0.0)
     }
 
