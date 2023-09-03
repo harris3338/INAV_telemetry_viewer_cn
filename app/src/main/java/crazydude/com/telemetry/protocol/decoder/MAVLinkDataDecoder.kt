@@ -12,22 +12,14 @@ class MAVLinkDataDecoder(listener: Listener) : DataDecoder(listener) {
     private var newLongitude = false
     private var latitude: Double = 0.0
     private var longitude: Double = 0.0
-    private var homeLatitude: Double = 0.0
-    private var homeLongitude: Double = 0.0
-    private var armedLatitude: Double = 0.0
-    private var armedLongitude: Double = 0.0
-    private var originLatitude: Double = 0.0
-    private var originLongitude: Double = 0.0
     private var fix = false
     private var satellites = 0
-    private var armed = false;
-    private var armedOnce = false;
     private var rcChannels = IntArray(8) {1500};
 
     companion object {
         private const val MAV_MODE_FLAG_STABILIZE_ENABLED = 16
         private const val MAV_MODE_FLAG_GUIDED_ENABLED = 8
-        private const val MAV_MODE_FLAG_SAFETY_ARMED = 128
+        public const val MAV_MODE_FLAG_SAFETY_ARMED = 128
         private const val MAV_MODE_FLAG_CUSTOM_MODE_ENABLED = 1
 
         private const val MAV_TYPE_FIXED_WING = 1
@@ -91,16 +83,8 @@ class MAVLinkDataDecoder(listener: Listener) : DataDecoder(listener) {
         this.newLongitude = false
         this.latitude = 0.0
         this.longitude = 0.0
-        this.homeLatitude = 0.0
-        this.homeLongitude = 0.0
-        this.armedLatitude = 0.0
-        this.armedLongitude = 0.0
-        this.originLatitude = 0.0
-        this.originLongitude = 0.0
         this.fix = false
         this.satellites = 0
-        this.armed = false;
-        this.armedOnce = false;
         this.rcChannels = IntArray(8) {1500};
         this.listener.onDecoderRestart()
     }
@@ -173,7 +157,6 @@ class MAVLinkDataDecoder(listener: Listener) : DataDecoder(listener) {
                 val isGuided =
                     (rawMode and MAV_MODE_FLAG_GUIDED_ENABLED) == MAV_MODE_FLAG_GUIDED_ENABLED
                 val armed = (rawMode and MAV_MODE_FLAG_SAFETY_ARMED) == MAV_MODE_FLAG_SAFETY_ARMED
-                this.armed = armed;
                 val isFailsafe = state == MAV_STATE_CRITICAL;
 
                 var flyMode: DataDecoder.Companion.FlyMode? = null
@@ -249,19 +232,15 @@ class MAVLinkDataDecoder(listener: Listener) : DataDecoder(listener) {
             }
 
             Protocol.GPS_ORIGIN_LONGITUDE -> {
-                originLongitude = data.data / 10000000.toDouble()
             }
 
             Protocol.GPS_ORIGIN_LATITUDE -> {
-                originLatitude = data.data / 10000000.toDouble()
             }
 
             Protocol.GPS_HOME_LONGITUDE -> {
-                homeLongitude = data.data / 10000000.toDouble()
             }
 
             Protocol.GPS_HOME_LATITUDE -> {
-                homeLatitude = data.data / 10000000.toDouble()
             }
 
             Protocol.RSSI -> {
@@ -278,6 +257,9 @@ class MAVLinkDataDecoder(listener: Listener) : DataDecoder(listener) {
                 rcChannels[index] = data.data
                 listener.onRCChannels(rcChannels)
             }
+            Protocol.DISTANCE -> {
+                listener.onDistanceData(data.data)
+            }
             else -> {
                 decoded = false
             }
@@ -285,48 +267,8 @@ class MAVLinkDataDecoder(listener: Listener) : DataDecoder(listener) {
 
         if (newLatitude && newLongitude) {
             if (latitude != 0.0 && longitude != 0.0) {
-
             	listener.onGPSData(latitude, longitude)
-
-                if ( armed && !armedOnce ) {
-                    armedLatitude = latitude
-                    armedLongitude = longitude
-                    armedOnce = true;
-                }
-
-                if (homeLatitude != 0.0 && homeLongitude != 0.0) {
-
-                    val distance = SphericalUtil.computeDistanceBetween(
-                        LatLng(
-                            homeLatitude,
-                            homeLongitude
-                        ), LatLng(latitude, longitude)
-                    )
-
-                    listener.onDistanceData(distance.toInt())
-                } else if (originLatitude != 0.0 && originLongitude != 0.0 ) {
-
-                        val distance = SphericalUtil.computeDistanceBetween(
-                            LatLng(
-                                originLatitude,
-                                originLongitude
-                            ), LatLng(latitude, longitude)
-                        )
-
-                        listener.onDistanceData(distance.toInt())
-                } else if (armedLatitude != 0.0 && armedLongitude != 0.0 ) {
-
-                    val distance = SphericalUtil.computeDistanceBetween(
-                        LatLng(
-                            armedLatitude,
-                            armedLongitude
-                        ), LatLng(latitude, longitude)
-                    )
-
-                    listener.onDistanceData(distance.toInt())
-                }
             }
-
             newLatitude = false
             newLongitude = false
         }
