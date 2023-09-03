@@ -137,6 +137,9 @@ abstract class DataDecoder(protected val listener: Listener) {
             override fun onDecoderRestart() {
             }
 
+            override fun onProtocolDetected( protocolName: String) {
+            }
+
         }
 
     }
@@ -196,6 +199,7 @@ abstract class DataDecoder(protected val listener: Listener) {
         fun onTelemetryByte()
         fun onSuccessDecode()
         fun onDecoderRestart()
+        fun onProtocolDetected( protocolName: String)
     }
 
     fun isGPSData( telemetryType : Int ) : Boolean {

@@ -501,6 +501,9 @@ class LogPlayer(val originalListener: DataDecoder.Listener) : DataDecoder.Listen
         originalListener.onDecoderRestart()
     }
 
+    override fun onProtocolDetected( protocolName: String) {
+    }
+
     override fun onFlyModeData(
         armed: Boolean,
         heading: Boolean,
