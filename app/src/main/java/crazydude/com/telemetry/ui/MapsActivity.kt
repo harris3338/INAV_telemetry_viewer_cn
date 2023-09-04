@@ -2724,11 +2724,14 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         return true;
     }
 
-    override fun onCameraConnected(){
+    override fun onCameraConnecting(){
         var layout = preferenceManager.getMainLayout()
         if (layout == 0) {
             setNextLayout()
         }
+    }
+
+    override fun onCameraConnected(){
     }
 
 
