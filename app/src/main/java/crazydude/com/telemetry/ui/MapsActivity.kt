@@ -221,6 +221,10 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         replayFileString = savedInstanceState?.getString("replay_file_name")
         fullscreenWindow = preferenceManager.isFullscreenWindow()
 
+        lastSelectedDataPooler = preferenceManager.getLastSelectedDataPooler()
+        lastSelectedBluetoothDeviceAddress = preferenceManager.getLastSelectedBluetoothDeviceAddress()
+        lastSelectedBLEDeviceAddress = preferenceManager.getLastSelectedBLEDeviceAddress()
+
         rootLayout = findViewById(R.id.rootLayout)
         fuel = findViewById(R.id.fuel)
         rssi = findViewById(R.id.rssi)
@@ -1004,6 +1008,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                         })
                 ) { dialogInterface, i ->
                     lastSelectedDataPooler = items[i]
+                    preferenceManager.setLastSelectedDataPooler(lastSelectedDataPooler)
                     when (i) {
                         0 -> connectBluetooth()
                         1 -> connectBluetoothLE()
@@ -1153,6 +1158,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             showPairDeviceDialog()
         }.setAdapter(deviceAdapter) { _, i ->
             lastSelectedBluetoothDeviceAddress = devices[i].address;
+            preferenceManager.setLastSelectedBluetoothDeviceAddress(lastSelectedBluetoothDeviceAddress)
             runOnUiThread {
                 connectToBluetoothDevice(devices[i], false)
             }
@@ -1322,6 +1328,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             }
         }.setAdapter(deviceAdapter) { _, i ->
             lastSelectedBLEDeviceAddress = devices[i].address;
+            preferenceManager.setLastSelectedBLEDeviceAddress(lastSelectedBLEDeviceAddress)
             if (bleCheck()) {
                 adapter.stopLeScan(callback)
             }
