@@ -181,6 +181,10 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     private var lastFileDialogSelectionIndex = -1;
     private var lastFileDialogSelection = "";
 
+    private var lastSelectedDataPooler = "";
+    private var lastSelectedBluetoothDeviceAddress = "";
+    private var lastSelectedBLEDeviceAddress = "";
+
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(p0: ComponentName?) {
             onDisconnected()
@@ -977,15 +981,29 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                 })
             .singleUse("replay_guide").build()
 
+        var items = arrayOf(
+            "Bluetooth",
+            "Bluetooth LE",
+            "USB Serial"
+        )
+
         if (showcaseView.hasFired()) {
             this.showDialog(AlertDialog.Builder(this)
-                .setItems(
-                    arrayOf(
-                        "Bluetooth",
-                        "Bluetooth LE",
-                        "USB Serial"
-                    )
+                .setAdapter(
+                    ArrayAdapter(
+                        this,
+                        android.R.layout.simple_list_item_1,
+                        items.map { i ->
+                            if (i == lastSelectedDataPooler) {
+                                val boldOption = SpannableString(i)
+                                boldOption.setSpan(StyleSpan(Typeface.BOLD), 0, i.length, 0)
+                                boldOption
+                            } else {
+                                i
+                            }
+                        })
                 ) { dialogInterface, i ->
+                    lastSelectedDataPooler = items[i]
                     when (i) {
                         0 -> connectBluetooth()
                         1 -> connectBluetoothLE()
@@ -1102,11 +1120,26 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             if (result == null) {
                 result = it.address
             }
+            if (result == null) {
+                result = "*noname*"
+            }
             result
-        }.filterNotNull())
-        val deviceAdapter =
-            ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, deviceNames)
+        })
 
+        val deviceAdapter =
+            //ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, deviceNames)
+            ArrayAdapter(
+                this,
+                android.R.layout.simple_list_item_1,
+                deviceNames.mapIndexed { index, i ->
+                    if ( devices[index].address == lastSelectedBluetoothDeviceAddress ) {
+                        val boldOption = SpannableString(i)
+                        boldOption.setSpan(StyleSpan(Typeface.BOLD), 0, i.length, 0)
+                        boldOption
+                    } else {
+                        i
+                    }
+                })
         val callback = BluetoothAdapter.LeScanCallback { bluetoothDevice, i, bytes ->
             if (!devices.contains(bluetoothDevice) && bluetoothDevice.name != null) {
                 devices.add(bluetoothDevice)
@@ -1115,14 +1148,26 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             }
         }
 
-        this.showDialog(AlertDialog.Builder(this).setOnDismissListener {
+        var dialog = AlertDialog.Builder(this).setOnDismissListener {
         } .setNeutralButton(R.string.pair_new_device) { dialog, which ->
             showPairDeviceDialog()
         }.setAdapter(deviceAdapter) { _, i ->
+            lastSelectedBluetoothDeviceAddress = devices[i].address;
             runOnUiThread {
                 connectToBluetoothDevice(devices[i], false)
             }
-        }.create())
+        }.create()
+
+        dialog.setOnShowListener {
+            val alertDialog = it as AlertDialog
+            var index = devices.indexOfFirst {i -> i.address == lastSelectedBluetoothDeviceAddress}
+            if ( index != -1) {
+                val centerY = alertDialog.listView.height / 2 // Calculate the center position vertically
+                alertDialog.listView.smoothScrollToPositionFromTop(index, centerY)
+            }
+        }
+
+        this.showDialog(dialog)
     }
 
     private fun showPairDeviceDialog() {
@@ -1239,10 +1284,25 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             if (result == null) {
                 result = it.address
             }
+            if (result == null) {
+                result = "*noname*"
+            }
             result
-        }.filterNotNull())
+        })
         val deviceAdapter =
-            ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, deviceNames)
+            //ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, deviceNames)
+            ArrayAdapter(
+                this,
+                android.R.layout.simple_list_item_1,
+                deviceNames.mapIndexed { index, i ->
+                    if ( devices[index].address == lastSelectedBLEDeviceAddress ) {
+                        val boldOption = SpannableString(i)
+                        boldOption.setSpan(StyleSpan(Typeface.BOLD), 0, i.length, 0)
+                        boldOption
+                    } else {
+                        i
+                    }
+                })
 
         val callback = BluetoothAdapter.LeScanCallback { bluetoothDevice, i, bytes ->
             if (!devices.contains(bluetoothDevice) && bluetoothDevice.name != null) {
@@ -1256,18 +1316,30 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             adapter.startLeScan(callback)
         }
 
-        this.showDialog(AlertDialog.Builder(this).setOnDismissListener {
+        var dialog = AlertDialog.Builder(this).setOnDismissListener {
             if (bleCheck()) {
                 adapter.stopLeScan(callback)
             }
         }.setAdapter(deviceAdapter) { _, i ->
+            lastSelectedBLEDeviceAddress = devices[i].address;
             if (bleCheck()) {
                 adapter.stopLeScan(callback)
             }
             runOnUiThread {
                 connectToBluetoothDevice(devices[i], true)
             }
-        }.create())
+        }.create()
+
+        dialog.setOnShowListener {
+            val alertDialog = it as AlertDialog
+            var index = devices.indexOfFirst {i -> i.address == lastSelectedBLEDeviceAddress}
+            if ( index != -1) {
+                val centerY = alertDialog.listView.height / 2 // Calculate the center position vertically
+                alertDialog.listView.smoothScrollToPositionFromTop(index, centerY)
+            }
+        }
+
+        this.showDialog(dialog)
     }
 
     private fun resetUI() {
