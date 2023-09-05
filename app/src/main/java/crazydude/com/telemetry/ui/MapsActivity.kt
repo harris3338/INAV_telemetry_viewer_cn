@@ -197,8 +197,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             dataService?.let {
                 if (it.isConnected()) {
                     switchToConnectedState()
-                    polyLine?.addPoints(it.points)
-                    limitRouteLinePoints();
+                    polyLine?.submitPoints(it.points)
                 }
             }
         }
@@ -478,8 +477,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         polyLine = map?.addPolyline(preferenceManager.getRouteColor())
         val p = dataService?.points;
         if (p != null) {
-            polyLine?.addPoints(p)
-            limitRouteLinePoints()
+            polyLine?.submitPoints(p)
         }
         showMyLocation()
     }
@@ -514,8 +512,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             polyLine = map?.addPolyline(preferenceManager.getRouteColor())
             val p = dataService?.points;
             if (p != null) {
-                polyLine?.addPoints(p)
-                limitRouteLinePoints()
+                polyLine?.submitPoints(p)
             }
             map?.setOnCameraMoveStartedListener {
                 setFollowMode(false);
@@ -783,7 +780,6 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                         Toast.makeText(context, "Protocol: $protocolName", Toast.LENGTH_SHORT).show()
                     }
                 }
-
             })
         }
     }
@@ -2216,6 +2212,10 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         }
     }
 
+    override fun commit() {
+        commitRouteLinePoints()
+    }
+
     override fun onGPSData(list: List<Position>, addToEnd: Boolean) {
         this.sensorTimeoutManager.onGPSData(list, addToEnd);
         runOnUiThread {
@@ -2228,9 +2228,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                 //add all points except last one
                 //last one will be fired in onGPSData()
                 if ( list.size>=2) {
-                    polyLine?.addPoints(list)
-                    polyLine?.removeAt(polyLine?.size!! - 1)
-                    limitRouteLinePoints();
+                    polyLine?.submitPoints(list.dropLast(1))
                 }
 
                 for (i in 0..list.size - 2) {
@@ -2267,8 +2265,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                     }
                 }
                 if (hasGPSFix) {
-                    polyLine?.addPoints(listOf(lastGPS))
-                    limitRouteLinePoints();
+                    polyLine?.submitPoints(listOf(lastGPS))
                     this.lastTraveledDistance += d
                     this.traveled_distance.text =
                         this.formatDistance(this.lastTraveledDistance.toFloat());
@@ -2515,14 +2512,12 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         }
     }
 
-    fun limitRouteLinePoints() {
-        val maxCount = preferenceManager.getMaxRoutePoints()
-
-        if (maxCount > 0) {
-            while (polyLine?.size ?: 0 > maxCount) {
-                polyLine?.removeAt(0)
-            }
+    fun commitRouteLinePoints() {
+        var maxCount = preferenceManager.getMaxRoutePoints()
+        if ( maxCount < 0) {
+            maxCount = 10000
         }
+        polyLine?.commitPoints(maxCount)
     }
 
     fun showRenameLogDialog() {
