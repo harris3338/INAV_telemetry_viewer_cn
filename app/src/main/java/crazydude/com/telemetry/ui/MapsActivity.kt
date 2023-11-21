@@ -132,6 +132,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     private lateinit var followButton: FloatingActionButton
     private lateinit var mapTypeButton: FloatingActionButton
     private lateinit var fullscreenButton: ImageView
+    private lateinit var videoFullscreenButton: ImageView
     private lateinit var layoutButton: ImageView
     private lateinit var menuButton: FloatingActionButton
     private lateinit var settingsButton: ImageView
@@ -268,6 +269,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         playButton = findViewById(R.id.play_button)
         horizonView = findViewById(R.id.horizon_view)
         fullscreenButton = findViewById(R.id.fullscreen_button)
+        videoFullscreenButton = findViewById(R.id.video_fullscreen_button)
         layoutButton = findViewById(R.id.layout_button)
         menuButton = findViewById(R.id.replay_menu_button)
         topList = findViewById(R.id.top_list)
@@ -342,15 +344,21 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             setNextLayout();
         }
 
-        videoHolder.setOnClickListener {
-            var layout = preferenceManager.getMainLayout()
-            if (layout == 2) setNextLayout()
+        videoFullscreenButton.setOnClickListener {
+            var layout = preferenceManager.getMainLayout();
+            if ( layout == 2) layout = 1
+            else layout = 2;
+            preferenceManager.setMainLayout(layout)
+            updateLayout();
+            updateHorizonViewSize();
         }
 
+        /*
         rootLayout.setOnClickListener {
             var layout = preferenceManager.getMainLayout()
             if (layout == 2) setNextLayout()
         }
+        */
 
         followButton.setOnClickListener {
             setFollowMode(!followMode);
@@ -2301,9 +2309,16 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
 
         val bitmap = BitmapFactory.decodeByteArray(buf, 0, buf.size)
 
-        runOnUiThread {
-            this.cameraImageView.setImageDrawable(BitmapDrawable(resources, bitmap))
-            cameraImageDesc.text = "Frame:" + imagesReceived + " (" + buf.size + "b) Lost:" + imagesLost;
+        if ( bitmap != null)
+        {
+            runOnUiThread {
+                var aspect = bitmap.width*1.0 / bitmap.height
+                if ( aspect > 1.777777777 ) aspect = 1.777777777
+                videoHolder.setAspectRatio(aspect)
+
+                this.cameraImageView.setImageDrawable(BitmapDrawable(resources, bitmap))
+                cameraImageDesc.text = "Frame:" + imagesReceived + " (" + buf.size + "b) Lost:" + imagesLost;
+            }
         }
     }
 
@@ -2414,11 +2429,12 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     private fun setNextLayout() {
         var layout = preferenceManager.getMainLayout();
         layout++;
-        if (layout > 2) layout = 0;
+        if (layout > 1) layout = 0;
         preferenceManager.setMainLayout(layout)
         updateLayout();
         updateHorizonViewSize();
     }
+
 
     private fun updateLayout() {
         var layout = preferenceManager.getMainLayout()

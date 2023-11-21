@@ -28,4 +28,16 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_height="wrap_content"/>
 
+        <ImageView
+                android:id="@+id/video_fullscreen_button"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="right"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_fullscreen" />
+
 </crazydude.com.telemetry.ui.AspectFrameLayout>
