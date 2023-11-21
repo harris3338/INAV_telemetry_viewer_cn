@@ -56,14 +56,14 @@ class SensorTimeoutManager(protected val listener: SensorTimeoutManager.Listener
     private var lastRateUpdate = 0
 
 
-    fun zeroTimeouts(){
+    fun setTimeouts(t: Int){
         for( i in 0..SENSOR_COUNT-1){
-            timeoutMS[i]=0;
+            timeoutMS[i]=t;
         }
     }
 
     init {
-        this.zeroTimeouts();
+        this.setTimeouts(0);
         lastRateUpdate = 0;
     }
 
@@ -113,15 +113,18 @@ class SensorTimeoutManager(protected val listener: SensorTimeoutManager.Listener
 
     public fun disableTimeouts(){
         this.disabled = true;
-        this.zeroTimeouts();
+        this.setTimeouts(0);
         for( i in 0..SENSOR_COUNT-1){
             this.listener.onSensorData(i);
         }
     }
 
     public fun enableTimeouts(){
-        this.zeroTimeouts();
+        this.setTimeouts(0);
         this.disabled = false;
+        for( i in 0..SENSOR_COUNT-1) {
+            this.listener.onSensorData(i);
+        }
     }
 
     private fun onSensorData( sensorId: Int) {
@@ -129,8 +132,7 @@ class SensorTimeoutManager(protected val listener: SensorTimeoutManager.Listener
 
         var v = this.timeoutMS[sensorId];
         this.timeoutMS[sensorId] = 0;
-        if ( v >= SENSOR_TIMEOUT_MS )
-        {
+        if ( v >= SENSOR_TIMEOUT_MS ) {
             this.listener.onSensorData(sensorId);
         }
     }
@@ -274,6 +276,10 @@ class SensorTimeoutManager(protected val listener: SensorTimeoutManager.Listener
 
     override fun onVBATOrCellData(voltage: Float) {
         //VBAT OR cell_voltage are fired to SensorTimeoutManager
+    }
+
+    override fun onImageData(buf: ByteArray, imagesReceived: Int, imagesLost: Int) {
+
     }
 
     override fun onTelemetryByte(){

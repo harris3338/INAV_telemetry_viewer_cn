@@ -175,6 +175,15 @@ class BluetoothLeDataPoller(
                                                             )
                                                         listener?.onProtocolDetected("Mavlink v2")
                                                     }
+
+                                                    is LinkTestProtocol -> {
+                                                        selectedProtocol =
+                                                            LinkTestProtocol(
+                                                                listener
+                                                            )
+                                                        listener?.onProtocolDetected("Link Test")
+                                                    }
+
                                                 }
                                                 serviceSelected = true
                                                 runOnMainThread(Runnable {

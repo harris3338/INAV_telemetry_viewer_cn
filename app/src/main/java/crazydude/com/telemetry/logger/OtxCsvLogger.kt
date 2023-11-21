@@ -11,7 +11,7 @@ import java.util.*
 
 class OtxCsvLogger : DataDecoder.Listener {
 
-    private val fileWriter: FileWriter
+    private var fileWriter: FileWriter?
     private val file: File?
     private val timer = Timer()
 
@@ -90,8 +90,8 @@ class OtxCsvLogger : DataDecoder.Listener {
 
     private fun outputLine(line: List<String>) {
         val csv = line.joinToString(",")
-        fileWriter.append(csv)
-        fileWriter.append("\n")
+        fileWriter?.append(csv)
+        fileWriter?.append("\n")
     }
 
     /*
@@ -158,7 +158,8 @@ class OtxCsvLogger : DataDecoder.Listener {
     }
 
     override fun onConnectionFailed() {
-        fileWriter.close()
+        fileWriter?.close()
+        fileWriter = null
     }
 
     override fun onFuelData(fuel: Int) {
@@ -169,7 +170,9 @@ class OtxCsvLogger : DataDecoder.Listener {
     override fun onConnected() {
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                outputData()
+                if ( fileWriter != null) {
+                    outputData()
+                }
             }
         },1000,200)
     }
@@ -223,7 +226,8 @@ class OtxCsvLogger : DataDecoder.Listener {
 //        startActivity(Intent.createChooser(sendIntent, "SHARE"))
         timer.cancel()
         timer.purge()
-        fileWriter.close()
+        fileWriter?.close()
+        fileWriter = null;
     }
 
     override fun onGPSState(satellites: Int, gpsFix: Boolean) {
@@ -323,6 +327,10 @@ class OtxCsvLogger : DataDecoder.Listener {
 
     override fun onVBATOrCellData(voltage: Float) {
         this.batVoltage=voltage
+    }
+
+    override fun onImageData(buf: ByteArray, imagesReceived: Int, imagesLost: Int) {
+
     }
 
     override fun onTelemetryByte() {

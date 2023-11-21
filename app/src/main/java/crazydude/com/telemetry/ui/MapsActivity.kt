@@ -9,8 +9,10 @@ import android.content.*
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
@@ -158,6 +160,8 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     private lateinit var tlmRate: TextView
 
     private lateinit var mCameraFragment: com.serenegiant.usbcameratest4.CameraFragment
+    private lateinit var cameraImageView: ImageView
+    private lateinit var cameraImageDesc: TextView
 
     private lateinit var sensorViewMap: HashMap<String, View>
     private lateinit var sensorsConverters: HashMap<String, Converter>
@@ -285,6 +289,9 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         cell_voltage = findViewById(R.id.cell_voltage)
         throttle = findViewById(R.id.throttle)
         tlmRate = findViewById(R.id.tlm_rate)
+
+        cameraImageView = findViewById(R.id.cameraImageView)
+        cameraImageDesc = findViewById(R.id.cameraImageDesc)
 
         videoHolder.setAspectRatio(640.0 / 480)
 
@@ -2287,6 +2294,17 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
 
     override fun onTelemetryByte() {
         this.sensorTimeoutManager.onTelemetryByte()
+    }
+
+    override fun onImageData(buf: ByteArray, imagesReceived: Int, imagesLost: Int) {
+        this.sensorTimeoutManager. onImageData( buf, imagesReceived, imagesLost)
+
+        val bitmap = BitmapFactory.decodeByteArray(buf, 0, buf.size)
+
+        runOnUiThread {
+            this.cameraImageView.setImageDrawable(BitmapDrawable(resources, bitmap))
+            cameraImageDesc.text = "Frame:" + imagesReceived + " (" + buf.size + "b) Lost:" + imagesLost;
+        }
     }
 
     override fun onSuccessDecode() {

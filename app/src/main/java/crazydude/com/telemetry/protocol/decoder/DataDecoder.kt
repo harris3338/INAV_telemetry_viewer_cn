@@ -128,6 +128,9 @@ abstract class DataDecoder(protected val listener: Listener) {
             override fun onRssiDbmdData(rssi: Int) {
             }
 
+            override fun onImageData(buf: ByteArray, imagesReceived: Int, imagesLost: Int) {
+            }
+
             override fun onTelemetryByte() {
             }
 
@@ -187,7 +190,6 @@ abstract class DataDecoder(protected val listener: Listener) {
             firstFlightMode: FlyMode?,
             secondFlightMode: FlyMode? = null
         )
-
         fun onAirSpeedData(speed: Float)
         fun onRCChannels(rcChannels:IntArray)
         fun onStatusText(message: String)
@@ -199,6 +201,7 @@ abstract class DataDecoder(protected val listener: Listener) {
         fun onRssiDbm2Data(rssi: Int)
         fun onRssiDbmdData(rssi: Int)
         fun onVBATOrCellData(voltage: Float)
+        fun onImageData(buf: ByteArray, imagesReceived: Int, imagesLost: Int)
         fun onTelemetryByte()
         fun onSuccessDecode()
         fun onDecoderRestart()
@@ -206,7 +209,7 @@ abstract class DataDecoder(protected val listener: Listener) {
         fun commit()
     }
 
-    fun isGPSData( telemetryType : Int ) : Boolean {
+    fun isGPSOrImageData(telemetryType : Int ) : Boolean {
         return telemetryType == Protocol.GPS ||
             telemetryType == Protocol.GPS_STATE ||
             telemetryType == Protocol.GPS_SATELLITES ||
@@ -216,7 +219,9 @@ abstract class DataDecoder(protected val listener: Listener) {
             telemetryType == Protocol.GPS_ORIGIN_LATITUDE ||
             telemetryType == Protocol.GPS_ORIGIN_LONGITUDE ||
             telemetryType == Protocol.GPS_HOME_LATITUDE ||
-            telemetryType == Protocol.GPS_HOME_LONGITUDE;
+            telemetryType == Protocol.GPS_HOME_LONGITUDE ||
+            telemetryType == Protocol.IMAGE_HANDSHAKE ||
+            telemetryType == Protocol.IMAGE_DATA;
     }
 
 }

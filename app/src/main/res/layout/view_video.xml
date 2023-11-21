@@ -4,10 +4,28 @@
         android:background="#606060"
         >
 
-    <fragment
-            android:id="@+id/cameraFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.serenegiant.usbcameratest4.CameraFragment"/>
+        <fragment
+                android:id="@+id/cameraFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:name="com.serenegiant.usbcameratest4.CameraFragment"/>
+        <ImageView
+                android:id="@+id/cameraImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter" />
+
+        <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/cameraImageDesc"
+                android:textColor="@color/WHITE"
+                android:background="@color/BLACK"
+                android:textSize="16sp"
+                android:paddingLeft="1sp"
+                android:paddingRight="1sp"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content"/>
 
 </crazydude.com.telemetry.ui.AspectFrameLayout>

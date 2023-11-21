@@ -1,10 +1,10 @@
 package crazydude.com.telemetry.protocol.decoder
 
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.SphericalUtil
+import android.util.Log
 import crazydude.com.telemetry.protocol.Protocol
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+
 
 class MAVLinkDataDecoder(listener: Listener) : DataDecoder(listener) {
 
@@ -15,6 +15,14 @@ class MAVLinkDataDecoder(listener: Listener) : DataDecoder(listener) {
     private var fix = false
     private var satellites = 0
     private var rcChannels = IntArray(8) {1500};
+
+    private var expectChankId = -1;
+    private var expectImageSize = 0;
+    private var gotImageSize = 0;
+    private var expectChunkSize = 0;
+    private lateinit var image: ByteArray;
+    private var imagesLost = 0;
+    private var imagesReceived = 0;
 
     companion object {
         private const val MAV_MODE_FLAG_STABILIZE_ENABLED = 16
@@ -29,7 +37,7 @@ class MAVLinkDataDecoder(listener: Listener) : DataDecoder(listener) {
         private const val PLANE_MODE_MANUAL = 0
         private const val PLANE_MODE_CIRCLE = 1
         private const val PLANE_MODE_STABILIZE = 2
-        private const val PLANE_MODE_TRAINING = 3
+        private const val PLANE_MODE_TRAINING = 311
         private const val PLANE_MODE_ACRO = 4
         private const val PLANE_MODE_FLY_BY_WIRE_A = 5
         private const val PLANE_MODE_FLY_BY_WIRE_B = 6
@@ -259,6 +267,84 @@ class MAVLinkDataDecoder(listener: Listener) : DataDecoder(listener) {
             }
             Protocol.DISTANCE -> {
                 listener.onDistanceData(data.data)
+            }
+            Protocol.IMAGE_HANDSHAKE -> {
+/*
+                uint32_t size; /*< [bytes] total data size (set on ACK only).*/
+                uint16_t width; /*<  Width of a matrix or image.*/
+                uint16_t height; /*<  Height of a matrix or image.*/
+                uint16_t packets; /*<  Number of packets being sent (set on ACK only).*/
+                uint8_t type; /*<  Type of requested/acknowledged data.*/
+                uint8_t payload; /*< [bytes] Payload size per packet (normally 253 byte, see DATA field size in message ENCAPSULATED_DATA) (set on ACK only).*/
+                uint8_t jpg_quality; /*< [%] JPEG quality. Values: [1-100].*/
+*/
+                val byteBuffer = ByteBuffer.wrap(data.rawData).order(ByteOrder.LITTLE_ENDIAN)
+                val imageSize = byteBuffer.int
+                val imageWidth = byteBuffer.short
+                val imageHeight = byteBuffer.short
+                val totalImageChunks = byteBuffer.short
+                val type = byteBuffer.get().toUByte()
+                val imageChunkSize = byteBuffer.get().toUByte().toInt()
+                val imageQuality = byteBuffer.get().toUByte()
+
+                /*
+                Log.d("IMAGE", "Image handshake");
+                Log.d("IMAGE", "Size=" + imageSize)
+                Log.d("IMAGE", "Width=" + imageWidth)
+                Log.d("IMAGE", "Height=" + imageHeight)
+                Log.d("IMAGE", "TotalChunks=" + totalImageChunks)
+                Log.d("IMAGE", "type=" + type)
+                Log.d("IMAGE", "ChunkSize=" + imageChunkSize)
+                Log.d("IMAGE", "Quality=" + imageQuality)
+                */
+
+                this.expectChankId = 0;
+                this.expectChunkSize = imageChunkSize;
+                this.expectImageSize = imageSize;
+                this.gotImageSize = 0;
+
+                this.image = ByteArray(imageSize);
+            }
+            Protocol.IMAGE_DATA -> {
+/*
+                uint16_t seqnr; /*<  sequence number (starting with 0 on every transmission)*/
+                uint8_t data[253]; /*<  image data bytes*/
+ */
+                val byteBuffer = ByteBuffer.wrap(data.rawData).order(ByteOrder.LITTLE_ENDIAN)
+                val chunkId = byteBuffer.short.toInt();
+
+                //Log.d("IMAGE_CHUNK", "ChunkId=" + chunkId)
+
+                if ( this.expectChankId >= 0 )
+                {
+                    if ( chunkId != this.expectChankId )
+                    {
+                        Log.d("IMAGE_CHUNK", "Unexpected ChunkId=" + chunkId + ", expected=" + this.expectChankId)
+                        this.expectChankId = -1;
+                        this.imagesLost++;
+                    }
+                    else
+                    {
+                        var len = this.expectChunkSize;
+                        var maxLen = this.expectImageSize - this.gotImageSize;
+                        if ( len > maxLen ) len = maxLen;
+
+                        data.rawData!!.copyInto(this.image, this.gotImageSize, 2, len + 2 )
+
+                        this.gotImageSize += len;
+                        this.expectChankId++;
+
+                        if ( this.gotImageSize == this.expectImageSize)
+                        {
+                            this.expectChankId = -1;
+                            this.imagesReceived++;
+                            Log.d("IMAGE", "Got image=" + this.gotImageSize + " bytes")
+                            listener.onImageData(this.image, this.imagesReceived, this.imagesLost)
+
+                        }
+                    }
+                }
+
             }
             else -> {
                 decoded = false

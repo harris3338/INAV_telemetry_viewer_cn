@@ -2,7 +2,6 @@ package crazydude.com.telemetry.protocol.pollers
 import android.annotation.SuppressLint
 import android.os.AsyncTask
 import android.os.Environment
-import android.widget.Toast
 import crazydude.com.telemetry.maps.Position
 import crazydude.com.telemetry.protocol.*
 import crazydude.com.telemetry.protocol.decoder.DataDecoder
@@ -206,7 +205,7 @@ class LogPlayer(val originalListener: DataDecoder.Listener) : DataDecoder.Listen
             for (i in currentPosition until position) {
                 var prevFix = this.hasGPSFix
                 var prevSatellites = this.satellites;
-                if ( protocol.dataDecoder.isGPSData( cachedData[i].telemetryType )) {
+                if ( protocol.dataDecoder.isGPSOrImageData( cachedData[i].telemetryType )) {
                     protocol.dataDecoder.decodeData(cachedData[i])
                     if ( (prevFix != this.hasGPSFix) || (prevSatellites != this.satellites))
                     {
@@ -230,7 +229,7 @@ class LogPlayer(val originalListener: DataDecoder.Listener) : DataDecoder.Listen
             for (i in 0 until position) {
                 var prevFix = this.hasGPSFix
                 var prevSatellites = this.satellites;
-                if ( protocol.dataDecoder.isGPSData( cachedData[i].telemetryType )) {
+                if ( protocol.dataDecoder.isGPSOrImageData( cachedData[i].telemetryType )) {
                     protocol.dataDecoder.decodeData(cachedData[i])
                     if ( (prevFix != this.hasGPSFix) || (prevSatellites != this.satellites))
                     {
@@ -489,6 +488,10 @@ class LogPlayer(val originalListener: DataDecoder.Listener) : DataDecoder.Listen
 
     override fun onRssiDbmdData(rssi: Int) {
         originalListener.onRssiDbmdData(rssi)
+    }
+
+    override fun onImageData(buf: ByteArray, imagesReceived: Int, imagesLost: Int) {
+        originalListener.onImageData(buf, imagesReceived, imagesLost )
     }
 
     override fun onTelemetryByte(){

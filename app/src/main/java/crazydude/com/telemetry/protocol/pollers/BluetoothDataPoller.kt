@@ -74,6 +74,13 @@ class BluetoothDataPoller(
                                     listener?.onProtocolDetected("Mavlink v2")
                                 }
 
+                                is LinkTestProtocol -> {
+                                    selectedProtocol = LinkTestProtocol(
+                                        listener
+                                    )
+                                    listener?.onProtocolDetected("Link Test")
+                                }
+
                                 else -> {
                                     thread.interrupt()
                                 }
