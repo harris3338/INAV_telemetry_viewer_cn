@@ -2499,6 +2499,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             requestedOrientation = when (screenRotation) {
                 "Portrait" -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                 "Landscape" -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                "Reverse Landscape" -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
                 else -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
             }
         } catch (e: Exception) {

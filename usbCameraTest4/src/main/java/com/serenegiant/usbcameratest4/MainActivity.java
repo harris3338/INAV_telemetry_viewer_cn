@@ -67,19 +67,4 @@ public class MainActivity extends BaseActivity {
 		super.onDestroy();
 	}
 
-	protected final void updateScreenRotation() {
-        final int screenRotation = 2;
-        switch (screenRotation) {
-        case 1:
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        	break;
-        case 2:
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        	break;
-        default:
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-        	break;
-        }
-	}
-
 }
