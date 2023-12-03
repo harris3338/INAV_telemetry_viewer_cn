@@ -22,7 +22,8 @@ I am contributing most bugsfixes and enchancements to Crasydude's repository. Bu
 - GPX export
 - KML export
 - context menu for deleting and renaming logs
--  UI interface enchancements
+- UI interface enchancements
+- automatic reconnection (Bluetooth/BLE)
 - improved stability and bug fixes
 
 <sup>1</sup> *Channels are displayed with CRSF protocol if they are sent with telemetry. It works with this PR which allows to connect directly to Express LRS TX module:* https://github.com/ExpressLRS/ExpressLRS/pull/2018
