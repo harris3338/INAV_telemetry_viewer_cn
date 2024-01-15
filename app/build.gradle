@@ -82,6 +82,15 @@ dependencies {
 	implementation project(':libuvccamera')
 	implementation project(':usbCameraCommon')
 	implementation 'com.google.android:flexbox:2.0.1'
+    
+    //高德地图
+    //3D, 2D 地图so及jar
+    implementation 'com.amap.api:3dmap:latest.integration'
+    implementation 'com.amap.api:map2d:latest.integration'
+    //定位功能
+    implementation 'com.amap.api:location:latest.integration'
+    //搜索功能
+    implementation 'com.amap.api:search:latest.integration'
 }
 
 apply plugin: 'com.google.gms.google-services'

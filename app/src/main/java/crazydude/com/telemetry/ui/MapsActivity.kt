@@ -55,6 +55,7 @@ import crazydude.com.telemetry.maps.MapWrapper
 import crazydude.com.telemetry.maps.Position
 import crazydude.com.telemetry.maps.google.GoogleMapWrapper
 import crazydude.com.telemetry.maps.osm.OsmMapWrapper
+import crazydude.com.telemetry.maps.gaode.GaodeMapWrapper
 import crazydude.com.telemetry.protocol.decoder.DataDecoder
 import crazydude.com.telemetry.protocol.pollers.LogPlayer
 import crazydude.com.telemetry.service.DataService
@@ -85,7 +86,8 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             "Terrain (Google)",
             "Hybrid (Google)",
             "OpenStreetMap (can be cached)",
-            "OpenTopoMap (can be cached)"
+            "OpenTopoMap (can be cached)",
+            "高德卫星地图"
         )
 
         private const val CONNTYPE_NONE = 0
@@ -487,9 +489,30 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             initGoogleMap(simulateLifecycle)
         } else if (mapType == OsmMapWrapper.MAP_TYPE_DEFAULT) {
             initOSMMap(TileSourceFactory.DEFAULT_TILE_SOURCE)
-        } else {
+        } else if (mapType == OsmMapWrapper.MAP_TYPE_TOPO) {
             initOSMMap(TileSourceFactory.OpenTopo)
+        // TODO
+        } else (mapType == GaodeMapWrapper.MAP_TYPE_NORMAL) {
+            initGaodeMap(simulateLifecycle)
         }
+    }
+
+    // TODO
+    private fun initGaodeMap(tileSource: OnlineTileSourceBase) {
+        val mapView = org.osmdroid.views.MapView(this)
+        mapHolder.addView(mapView)
+        map = OsmMapWrapper(applicationContext, mapView, tileSource) {
+            initHeadingLine()
+        }
+        map?.setOnCameraMoveStartedListener {
+            setFollowMode(false);
+        }
+        polyLine = map?.addPolyline(preferenceManager.getRouteColor())
+        val p = dataService?.points;
+        if (p != null) {
+            polyLine?.submitPoints(p)
+        }
+        showMyLocation()
     }
 
     private fun initOSMMap(tileSource: OnlineTileSourceBase) {
@@ -819,9 +842,9 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     ) {
         runOnUiThread {
             if (armed) {
-                mode.text = "Armed"
+                mode.text = "已解锁"
             } else {
-                mode.text = "Disarmed"
+                mode.text = "已锁定"
             }
 
             if (heading) {
@@ -1040,7 +1063,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                         2 -> connectUSB()
                     }
                 }
-                .setTitle("Choose connection method")
+                .setTitle("选择连接方式")
                 .create())
         } else {
             showcaseView.show(this)
@@ -1128,7 +1151,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         if (adapter == null) {
             this.showDialog(
                 AlertDialog.Builder(this)
-                    .setMessage("It seems like your phone does not have bluetooth, or it does not supported")
+                    .setMessage("似乎您的设备不支持蓝牙")
                     .setPositiveButton("OK", null)
                     .create()
             )
@@ -1249,7 +1272,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     private fun pairDevice(bluetoothDevice: BluetoothDevice) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (!bluetoothDevice.createBond()) {
-                Toast.makeText(this, "Failed to pair bluetooth device", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "蓝牙设备配对失败", Toast.LENGTH_LONG).show()
             } else {
                 val receiver = object : BroadcastReceiver() {
                     override fun onReceive(context: Context?, intent: Intent?) {
@@ -1267,7 +1290,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                             } else if (newBondState == BluetoothDevice.BOND_NONE) {
                                 Toast.makeText(
                                     this@MapsActivity,
-                                    "Failed to pair new device",
+                                    "新设备配对失败",
                                     Toast.LENGTH_LONG
                                 ).show()
                                 unregisterReceiver(this)
@@ -1289,7 +1312,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         if (!bleCheck()) {
             Toast.makeText(
                 this,
-                "Bluetooth LE is not supported or application does not have needed permissions",
+                "不支持 Bluetooth LE 或应用权限不足",
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -1298,7 +1321,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         if (adapter == null) {
             this.showDialog(
                 AlertDialog.Builder(this)
-                    .setMessage("It seems like your phone does not have bluetooth, or it does not supported")
+                    .setMessage("似乎您的设备不支持蓝牙")
                     .setPositiveButton("OK", null)
                     .create()
             )
@@ -1428,7 +1451,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         distance.text = "-"
         traveled_distance.text = "0 m"
         this.lastTraveledDistance = 0.0;
-        mode.text = "Disconnected"
+        mode.text = "未连接"
         statustext.text = "";
         dnSnr.text = "-"
         upSnr.text = "-"
@@ -1551,7 +1574,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                     checkSendDataDialogShown()
                 } else {
                     this.showDialog(AlertDialog.Builder(this)
-                        .setMessage("Location permission is needed in order to discover BLE devices and show your location on map")
+                        .setMessage("需要打开定位权限已发现BLE设备和显示定位信息")
                         .setOnDismissListener { checkSendDataDialogShown() }
                         .setPositiveButton("OK", null)
                         .create())
@@ -1569,7 +1592,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                 } else {
                     this.showDialog(
                         AlertDialog.Builder(this)
-                            .setMessage("Write permission is required in order to log telemetry data. Disable logging or grant permission to continue")
+                            .setMessage("需要写文件权限以保存数传记录")
                             .setPositiveButton("OK", null)
                             .create()
                     )
@@ -1580,7 +1603,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                 } else {
                     this.showDialog(
                         AlertDialog.Builder(this)
-                            .setMessage("Read permission is required in order to read and replay telemetry data")
+                            .setMessage("需要读文件权限以回放数据")
                             .setPositiveButton("OK", null)
                             .create()
                     )
@@ -1995,7 +2018,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     }
 
     private fun showMapTypeSelectorDialog() {
-        val fDialogTitle = "Select Map Type"
+        val fDialogTitle = "选择地图类型"
         val builder = AlertDialog.Builder(this)
         builder.setTitle(fDialogTitle)
 
@@ -2205,7 +2228,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         menuButton.show()
         connectButton.text = getString(R.string.disconnect)
         connectButton.isEnabled = true
-        mode.text = "Connected"
+        mode.text = "已连接"
         connectButton.setOnClickListener {
             connectButton.isEnabled = false
             connectButton.text = getString(R.string.disconnecting)
@@ -2216,9 +2239,9 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
 
     override fun onConnectionFailed() {
         runOnUiThread {
-            Toast.makeText(this, "Connection failed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "连接失败", Toast.LENGTH_SHORT).show()
             connectButton.text = getString(R.string.connect)
-            mode.text = "Disconnected"
+            mode.text = "未连接"
             connectButton.isEnabled = true
             connectButton.setOnClickListener {
                 connect()
@@ -2413,7 +2436,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     override fun onConnected() {
         runOnUiThread {
             reconnectionStartTime = 0L;
-            Toast.makeText(this, "Connected!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "已连接!", Toast.LENGTH_SHORT).show()
             switchToConnectedState()
             this.lastTraveledDistance = 0.0;
             this.traveled_distance.text = "-"
