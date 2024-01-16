@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/INAV_telemetry_viewer_cn.iml" filepath="$PROJECT_DIR$/.idea/INAV_telemetry_viewer_cn.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/INAV_telemetry_viewer_cn.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/INAV_telemetry_viewer_cn.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/INAV_telemetry_viewer_cn.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/INAV_telemetry_viewer_cn.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/INAV_telemetry_viewer_cn.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/INAV_telemetry_viewer_cn.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/INAV_telemetry_viewer_cn.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/INAV_telemetry_viewer_cn.app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bt_debug/INAV_telemetry_viewer_cn.bt_debug.iml" filepath="$PROJECT_DIR$/.idea/modules/bt_debug/INAV_telemetry_viewer_cn.bt_debug.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bt_debug/INAV_telemetry_viewer_cn.bt_debug.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/bt_debug/INAV_telemetry_viewer_cn.bt_debug.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bt_debug/INAV_telemetry_viewer_cn.bt_debug.main.iml" filepath="$PROJECT_DIR$/.idea/modules/bt_debug/INAV_telemetry_viewer_cn.bt_debug.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/bt_debug/INAV_telemetry_viewer_cn.bt_debug.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/bt_debug/INAV_telemetry_viewer_cn.bt_debug.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libuvccamera/INAV_telemetry_viewer_cn.libuvccamera.iml" filepath="$PROJECT_DIR$/.idea/modules/libuvccamera/INAV_telemetry_viewer_cn.libuvccamera.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libuvccamera/INAV_telemetry_viewer_cn.libuvccamera.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/libuvccamera/INAV_telemetry_viewer_cn.libuvccamera.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libuvccamera/INAV_telemetry_viewer_cn.libuvccamera.main.iml" filepath="$PROJECT_DIR$/.idea/modules/libuvccamera/INAV_telemetry_viewer_cn.libuvccamera.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libuvccamera/INAV_telemetry_viewer_cn.libuvccamera.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/libuvccamera/INAV_telemetry_viewer_cn.libuvccamera.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbCameraCommon/INAV_telemetry_viewer_cn.usbCameraCommon.iml" filepath="$PROJECT_DIR$/.idea/modules/usbCameraCommon/INAV_telemetry_viewer_cn.usbCameraCommon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbCameraCommon/INAV_telemetry_viewer_cn.usbCameraCommon.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/usbCameraCommon/INAV_telemetry_viewer_cn.usbCameraCommon.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbCameraCommon/INAV_telemetry_viewer_cn.usbCameraCommon.main.iml" filepath="$PROJECT_DIR$/.idea/modules/usbCameraCommon/INAV_telemetry_viewer_cn.usbCameraCommon.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbCameraCommon/INAV_telemetry_viewer_cn.usbCameraCommon.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/usbCameraCommon/INAV_telemetry_viewer_cn.usbCameraCommon.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbCameraTest4/INAV_telemetry_viewer_cn.usbCameraTest4.iml" filepath="$PROJECT_DIR$/.idea/modules/usbCameraTest4/INAV_telemetry_viewer_cn.usbCameraTest4.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbCameraTest4/INAV_telemetry_viewer_cn.usbCameraTest4.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/usbCameraTest4/INAV_telemetry_viewer_cn.usbCameraTest4.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbCameraTest4/INAV_telemetry_viewer_cn.usbCameraTest4.main.iml" filepath="$PROJECT_DIR$/.idea/modules/usbCameraTest4/INAV_telemetry_viewer_cn.usbCameraTest4.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbCameraTest4/INAV_telemetry_viewer_cn.usbCameraTest4.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/usbCameraTest4/INAV_telemetry_viewer_cn.usbCameraTest4.unitTest.iml" />
+    </modules>
+  </component>
+</project>

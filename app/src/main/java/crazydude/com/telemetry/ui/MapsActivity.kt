@@ -85,7 +85,8 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             "Terrain (Google)",
             "Hybrid (Google)",
             "OpenStreetMap (can be cached)",
-            "OpenTopoMap (can be cached)"
+            "OpenTopoMap (can be cached)",
+            "高德卫星地图"
         )
 
         private const val CONNTYPE_NONE = 0
