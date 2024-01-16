@@ -999,8 +999,8 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             .renderOverNavigationBar()
             .setTarget(replayButton)
             .setMaskColour(Color.argb(230, 0, 0, 0))
-            .setDismissText("GOT IT")
-            .setContentText("You can replay your logged flights by clicking this button")
+            .setDismissText("了解")
+            .setContentText("点击此按钮回放飞行记录")
             .setListener(
                 object : IShowcaseListener {
                     override fun onShowcaseDismissed(showcaseView: MaterialShowcaseView?) {
@@ -1012,9 +1012,9 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             .singleUse("replay_guide").build()
 
         var items = arrayOf(
-            "Bluetooth",
-            "Bluetooth LE",
-            "USB Serial"
+            "蓝牙",
+            "低功耗蓝牙 LE",
+            "USB 串口"
         )
 
         if (showcaseView.hasFired()) {
@@ -1041,7 +1041,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                         2 -> connectUSB()
                     }
                 }
-                .setTitle("Choose connection method")
+                .setTitle("选择连接方式")
                 .create())
         } else {
             showcaseView.show(this)
@@ -1429,7 +1429,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         distance.text = "-"
         traveled_distance.text = "0 m"
         this.lastTraveledDistance = 0.0;
-        mode.text = "Disconnected"
+        mode.text = "未连接"
         statustext.text = "";
         dnSnr.text = "-"
         upSnr.text = "-"
@@ -2116,7 +2116,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
 
     override fun onDisconnected() {
         runOnUiThread {
-            Toast.makeText(this, "Disconnected", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "未连接", Toast.LENGTH_SHORT).show()
             switchToIdleState()
 
             if (preferenceManager.getConnectionVoiceMessagesEnabled()) {
@@ -2206,7 +2206,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         menuButton.show()
         connectButton.text = getString(R.string.disconnect)
         connectButton.isEnabled = true
-        mode.text = "Connected"
+        mode.text = "已连接"
         connectButton.setOnClickListener {
             connectButton.isEnabled = false
             connectButton.text = getString(R.string.disconnecting)
@@ -2217,9 +2217,9 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
 
     override fun onConnectionFailed() {
         runOnUiThread {
-            Toast.makeText(this, "Connection failed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "连接失败", Toast.LENGTH_SHORT).show()
             connectButton.text = getString(R.string.connect)
-            mode.text = "Disconnected"
+            mode.text = "未连接"
             connectButton.isEnabled = true
             connectButton.setOnClickListener {
                 connect()
