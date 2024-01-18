@@ -5,7 +5,16 @@ import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
-import android.content.*
+import android.content.ActivityNotFoundException
+import android.content.BroadcastReceiver
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.ComponentName
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -19,7 +28,12 @@ import android.hardware.usb.UsbManager
 import android.media.AudioManager
 import android.media.SoundPool
 import android.net.Uri
-import android.os.*
+import android.os.AsyncTask
+import android.os.BatteryManager
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
+import android.os.IBinder
 import android.text.Html
 import android.text.InputFilter
 import android.text.InputType
@@ -29,11 +43,21 @@ import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.SeekBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.amap.api.maps.AMap
+import com.amap.api.maps.MapsInitializer
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
@@ -53,6 +77,7 @@ import crazydude.com.telemetry.maps.MapLine
 import crazydude.com.telemetry.maps.MapMarker
 import crazydude.com.telemetry.maps.MapWrapper
 import crazydude.com.telemetry.maps.Position
+import crazydude.com.telemetry.maps.amap.AMapWrapper
 import crazydude.com.telemetry.maps.google.GoogleMapWrapper
 import crazydude.com.telemetry.maps.osm.OsmMapWrapper
 import crazydude.com.telemetry.protocol.decoder.DataDecoder
@@ -65,10 +90,9 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import uk.co.deanwild.materialshowcaseview.IShowcaseListener
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView
 import java.io.File
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.ceil
 import kotlin.math.roundToInt
+
 
 //class MapsActivity : AppCompatActivity(), DataDecoder.Listener {
 class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener, SensorTimeoutManager.Listener, CameraFragmentListener {
@@ -100,6 +124,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     }
 
     private var map: MapWrapper? = null
+    private var amap: AMap? = null
 
     private var soundPool: SoundPool? = null
     private var connectedSoundId: Int = 0
@@ -488,11 +513,43 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             initGoogleMap(simulateLifecycle)
         } else if (mapType == OsmMapWrapper.MAP_TYPE_DEFAULT) {
             initOSMMap(TileSourceFactory.DEFAULT_TILE_SOURCE)
-        } else {
+        } else if (mapType == OsmMapWrapper.MAP_TYPE_TOPO) {
             initOSMMap(TileSourceFactory.OpenTopo)
+        } else {
+            initAMap()
         }
     }
 
+    private fun initAMap() {
+        val mapView = com.amap.api.maps.MapView(this)
+        MapsInitializer.updatePrivacyShow(this,true,true);
+        MapsInitializer.updatePrivacyAgree(this,true);
+        mapView.onCreate(Bundle())
+        mapHolder.addView(mapView) // Assuming mapHolder is a ViewGroup in your layout to contain the map
+
+        val amapWrapper = AMapWrapper(this, mapView) {
+           initHeadingLine() // You will need to implement this function
+        }
+
+        map = amapWrapper // Assuming 'map' is a variable of type MapWrapper
+
+        map?.setOnCameraMoveStartedListener {
+            setFollowMode(false) // You will need to implement this method to handle camera movement interaction
+        }
+
+        // Assuming preferenceManager.getRouteColor() retrieves the desired color for the polyline
+        val polyLine = map?.addPolyline(preferenceManager.getRouteColor())
+
+        // Assuming dataService.points provides the list of positions for the polyline
+        val p = dataService?.points
+        if (p != null) {
+            polyLine?.submitPoints(p) // You will need to define submitPoints or replace it with the correct method call
+        }
+
+        // showMyLocation() 
+    }
+
+    
     private fun initOSMMap(tileSource: OnlineTileSourceBase) {
         val mapView = org.osmdroid.views.MapView(this)
         mapHolder.addView(mapView)

@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature
             android:name="android.hardware.bluetooth_le"
@@ -22,6 +23,9 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+
+        <meta-data android:name="com.amap.api.v2.apikey" android:value="72ae55e0955759454c8a838374c6b60e">
+        </meta-data>
 
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
