@@ -10,14 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bf5e6968-48b3-4847-a0ee-7a43ac7e0efa" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/deploymentTargetDropDown.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/crazydude/com/telemetry/maps/Position.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/crazydude/com/telemetry/maps/Position.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/crazydude/com/telemetry/ui/MapsActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/crazydude/com/telemetry/ui/MapsActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/crazydude/com/telemetry/maps/amap/AMapMarker.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/crazydude/com/telemetry/maps/amap/AMapMarker.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
