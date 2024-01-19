@@ -72,9 +72,9 @@ class AMapWrapper(private val context: Context, private val mapView: MapView, pr
         for (point in points) {
             polylineOptions.add(point.toAmapLatLng(context))
         }
-        polylineOptions.width(width).color(color)
+        polylineOptions.width(width * 5).color(color)
         val polyline = aMap.addPolyline(polylineOptions)
-        return AMapLine(aMap)
+        return AMapLine(aMap, polyline, context)
     }
 
     override fun setOnCameraMoveStartedListener(function: () -> Unit) {
@@ -91,7 +91,7 @@ class AMapWrapper(private val context: Context, private val mapView: MapView, pr
 
      override fun addPolyline(color: Int): MapLine {
          val res = aMap.addPolyline(PolylineOptions().color(color))
-         return AMapLine(aMap)
+         return AMapLine(aMap, res, context)
      }
 
     override fun onCreate(bundle: Bundle?) {

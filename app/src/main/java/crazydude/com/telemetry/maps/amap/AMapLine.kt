@@ -1,5 +1,6 @@
 package crazydude.com.telemetry.maps.amap
 
+import android.content.Context
 import com.amap.api.maps.AMap
 import com.amap.api.maps.model.LatLng
 import com.amap.api.maps.model.Polyline
@@ -7,29 +8,26 @@ import com.amap.api.maps.model.PolylineOptions
 import crazydude.com.telemetry.maps.MapLine
 import crazydude.com.telemetry.maps.Position
 
-class AMapLine(private val aMap: AMap) : MapLine() {
+class AMapLine(private val aMap: AMap, initialPolyline: Polyline, private val context: Context) : MapLine() {
 
     private val polylineOptions = PolylineOptions()
-    private lateinit var polyline: Polyline
-
-    init {
-        polyline = aMap.addPolyline(polylineOptions)
-    }
+    private var polyline: Polyline = initialPolyline
 
     override fun remove() {
         polyline.remove()
     }
 
     override fun addPoints(points: List<Position>) {
-        val latLngs = points.map { LatLng(it.lat, it.lon) }
-        polylineOptions.addAll(latLngs)
+        for (point in points) {
+            polylineOptions.add(point.toAmapLatLng(context))
+        }
         polyline.points = polylineOptions.points // refresh the polyline with new points
     }
 
     override fun setPoint(index: Int, position: Position) {
         if (index >= 0 && index < polyline.points.size) {
             val points = ArrayList(polyline.points)
-            points[index] = LatLng(position.lat, position.lon)
+            points[index] = position.toAmapLatLng(context)
             polyline.points = points
         }
     }

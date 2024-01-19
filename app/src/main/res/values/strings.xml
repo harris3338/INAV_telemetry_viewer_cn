@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Telemetry viewer</string>
+    <string name="app_name">Telemetry Viewer CN</string>
     <string name="title_activity_maps">Map</string>
     <string name="connecting">Connecting…</string>
     <string name="reconnecting">Reconnecting…</string>
