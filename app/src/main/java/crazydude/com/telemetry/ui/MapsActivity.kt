@@ -104,12 +104,12 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         private const val REQUEST_READ_PERMISSION: Int = 3
         private const val ACTION_USB_DEVICE = "action_usb_device"
         private val MAP_TYPE_ITEMS = arrayOf(
-            "Road Map (Google)",
-            "Satellite (Google)",
-            "Terrain (Google)",
-            "Hybrid (Google)",
-            "OpenStreetMap (can be cached)",
-            "OpenTopoMap (can be cached)",
+            "谷歌路网地图",
+            "谷歌卫星地图",
+            "谷歌地形图",
+            "谷歌混合地图",
+            "OSM地图（可缓存）",
+            "OSM地形图（可缓存）",
             "高德卫星地图"
         )
 
@@ -402,13 +402,13 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         }
 
         menuButton.setOnClickListener {
-            val option0 = "Copy UAV location to clipboard";
-            val option1 = "Show route to UAV";
-            val option2 = "Rename Log";
-            val option3 = "Delete Log";
-            val option4 = "Export GPX file...";
-            val option5 = "Export KML file...";
-            val option6 = "Set playback duration..."
+            val option0 = "复制飞机位置到剪贴板";
+            val option1 = "显示到飞机路线";
+            val option2 = "重命名日志";
+            val option3 = "删除日志";
+            val option4 = "导出GPX文件...";
+            val option5 = "导出KML文件...";
+            val option6 = "设置回放时长...";
 
             var options = arrayOf(option0, option1, option2, option3, option4, option5, option6)
             if ( this.logPlayer == null) {
@@ -416,7 +416,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             }
 
             this.showDialog( AlertDialog.Builder(this)
-            .setTitle("Select an action")
+            .setTitle("日志选项")
             .setItems(options) { dialog: DialogInterface, which: Int ->
                 val selectedOption = options[which]
                 when (selectedOption) {
@@ -634,12 +634,12 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             clipboardManager.primaryClip = ClipData.newPlainText("Location", posString)
             Toast.makeText(
                 this,
-                "Current plane location copied to clipboard ($posString)",
+                "当前飞机位置已复制到剪贴板 ($posString)",
                 Toast.LENGTH_LONG
             ).show()
         }
         if ( marker == null ) {
-            Toast.makeText(this, "Location is unknown", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "位置无效", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -653,11 +653,11 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             try {
                 startActivity(intent)
             } catch (e: ActivityNotFoundException) {
-                Toast.makeText(this, "Cannot build directions", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "无法获取路线", Toast.LENGTH_LONG).show()
             }
         }
         if ( marker == null ) {
-            Toast.makeText(this, "Location is unknown", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "位置无效", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -667,20 +667,20 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
 
         if (delta / 1000 / 60 / 60 / 24 > 3 && !preferenceManager.isYoutubeChannelShown()) {
             this.showDialog(AlertDialog.Builder(this)
-                .setTitle("Thanks for using my application")
+                .setTitle("感谢您使用本应用")
                 .setMessage(
-                    "Thanks for using my application. As it's does not contain any ads and completely free, " +
-                            "you can help me by subscribing to my youtube channel"
+                    "感谢使用本应用，此应用完全免费并且不含任何广告" +
+                            "如果你觉得有用，可以来B站点个关注，支持一下作者"
                 )
-                .setPositiveButton("Subscribe") { dialog: DialogInterface?, i: Int ->
+                .setPositiveButton("关注") { dialog: DialogInterface?, i: Int ->
                     startActivity(
                         Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("https://www.youtube.com/channel/UCjAhODF0Achhc1fynxEXQLg?view_as=subscriber&sub_confirmation=1")
+                            Uri.parse("https://space.bilibili.com/14593294?spm_id_from=333.1007.0.0")
                         )
                     )
                 }
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("取消", null)
                 .setOnDismissListener { preferenceManager.setYoutubeShown() }
                 .create());
         }
@@ -753,7 +753,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                 }
             }
         } else {
-            Toast.makeText(this, "You need to disconnect first", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "请先断开连接", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -862,7 +862,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
 
                 override fun onProtocolDetected(protocolName: String) {
                     runOnUiThread {
-                        Toast.makeText(context, "Protocol: $protocolName", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "协议: $protocolName", Toast.LENGTH_SHORT).show()
                     }
                 }
             })
@@ -877,13 +877,13 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     ) {
         runOnUiThread {
             if (armed) {
-                mode.text = "Armed"
+                mode.text = "已解锁"
             } else {
-                mode.text = "Disarmed"
+                mode.text = "未解锁"
             }
 
             if (heading) {
-                mode.text = mode.text.toString() + " | Heading"
+                mode.text = mode.text.toString() + " | 朝向"
             }
 
             decodeMode(firstFlightMode)
@@ -1110,13 +1110,13 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         val drivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager)
         val driver = drivers.firstOrNull()
         if (driver == null) {
-            Toast.makeText(this, "No valid usb driver has been found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "未发现有效USB设备", Toast.LENGTH_SHORT).show()
         } else {
             val connection = usbManager.openDevice(driver.device)
             if (connection != null) {
                 val port = driver.ports.firstOrNull()
                 if (port == null) {
-                    Toast.makeText(this, "No valid usb port has been found", Toast.LENGTH_SHORT)
+                    Toast.makeText(this, "未发现有效USB端口", Toast.LENGTH_SHORT)
                         .show()
                 } else {
                     connectToUSBDevice(port, connection)
@@ -1142,7 +1142,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                                 } else {
                                     Toast.makeText(
                                         this@MapsActivity,
-                                        "You need to allow permission in order to connect with a usb",
+                                        "连接USB需要打开权限",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -1186,7 +1186,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         if (adapter == null) {
             this.showDialog(
                 AlertDialog.Builder(this)
-                    .setMessage("It seems like your phone does not have bluetooth, or it does not supported")
+                    .setMessage("似乎您的设备不支持蓝牙")
                     .setPositiveButton("OK", null)
                     .create()
             )
@@ -1307,7 +1307,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     private fun pairDevice(bluetoothDevice: BluetoothDevice) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             if (!bluetoothDevice.createBond()) {
-                Toast.makeText(this, "Failed to pair bluetooth device", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "蓝牙设备配对失败", Toast.LENGTH_LONG).show()
             } else {
                 val receiver = object : BroadcastReceiver() {
                     override fun onReceive(context: Context?, intent: Intent?) {
@@ -1325,7 +1325,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                             } else if (newBondState == BluetoothDevice.BOND_NONE) {
                                 Toast.makeText(
                                     this@MapsActivity,
-                                    "Failed to pair new device",
+                                    "配对新设备失败",
                                     Toast.LENGTH_LONG
                                 ).show()
                                 unregisterReceiver(this)
@@ -1347,7 +1347,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         if (!bleCheck()) {
             Toast.makeText(
                 this,
-                "Bluetooth LE is not supported or application does not have needed permissions",
+                "设备不支持低功耗蓝牙BLE或未获得所需权限",
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -1356,7 +1356,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         if (adapter == null) {
             this.showDialog(
                 AlertDialog.Builder(this)
-                    .setMessage("It seems like your phone does not have bluetooth, or it does not supported")
+                    .setMessage("似乎您的设备不支持蓝牙")
                     .setPositiveButton("OK", null)
                     .create()
             )
@@ -1609,7 +1609,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                     checkSendDataDialogShown()
                 } else {
                     this.showDialog(AlertDialog.Builder(this)
-                        .setMessage("Location permission is needed in order to discover BLE devices and show your location on map")
+                        .setMessage("需要获取定位权限以显示当前位置")
                         .setOnDismissListener { checkSendDataDialogShown() }
                         .setPositiveButton("OK", null)
                         .create())
@@ -1627,7 +1627,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                 } else {
                     this.showDialog(
                         AlertDialog.Builder(this)
-                            .setMessage("Write permission is required in order to log telemetry data. Disable logging or grant permission to continue")
+                            .setMessage("需要获得写入权限以记录日志")
                             .setPositiveButton("OK", null)
                             .create()
                     )
@@ -1638,7 +1638,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
                 } else {
                     this.showDialog(
                         AlertDialog.Builder(this)
-                            .setMessage("Read permission is required in order to read and replay telemetry data")
+                            .setMessage("需要获得读取权限以回放日志")
                             .setPositiveButton("OK", null)
                             .create()
                     )
@@ -2028,18 +2028,15 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             val dialog = AlertDialog.Builder(this)
                 .setMessage(
                     Html.fromHtml(
-                        "You can enable telemetry data sharing. Telemetry data sharing sends data to <a href='https://uavradar.org'>https://uavradar.org</a> at which" +
-                                "you can watch for other aicraft flights (just like flightradar24, but for UAV). You can assign" +
-                                " your callsign and your UAV model in the settings which will be used as your aircraft info. " +
-                                "Data sent when you arm your UAV and have valid 3D GPS Fix"
+                        "您可以启用数传数据分享，需要在 <a href='https://uavradar.org'>https://uavradar.org</a> 上获取权限"
                     )
                 )
-                .setPositiveButton("Enable") { _, i ->
+                .setPositiveButton("启用") { _, i ->
                     preferenceManager.setTelemetrySendingEnabled(true)
                     firebaseAnalytics.setUserProperty("telemetry_sharing_enable", "true")
                     firebaseAnalytics.logEvent("telemetry_sharing_enabled", null)
                 }
-                .setNegativeButton("Disable") { _, i ->
+                .setNegativeButton("关闭") { _, i ->
                     preferenceManager.setTelemetrySendingEnabled(false)
                     firebaseAnalytics.setUserProperty("telemetry_sharing_enable", "false")
                     firebaseAnalytics.logEvent("telemetry_sharing_disabled", null)
@@ -2053,7 +2050,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     }
 
     private fun showMapTypeSelectorDialog() {
-        val fDialogTitle = "Select Map Type"
+        val fDialogTitle = "选择地图类型"
         val builder = AlertDialog.Builder(this)
         builder.setTitle(fDialogTitle)
 
@@ -2395,7 +2392,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
 
     override fun onProtocolDetected( protocolName: String) {
         runOnUiThread {
-            Toast.makeText(this, "Protocol: $protocolName", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "协议: $protocolName", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -2471,7 +2468,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
     override fun onConnected() {
         runOnUiThread {
             reconnectionStartTime = 0L;
-            Toast.makeText(this, "Connected!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "已连接!", Toast.LENGTH_SHORT).show()
             switchToConnectedState()
             this.lastTraveledDistance = 0.0;
             this.traveled_distance.text = "-"
@@ -2756,13 +2753,13 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         if (!requestWritePermission(RequestWritePermissionSequenceType.DELETE)) return;
 
         this.showDialog( AlertDialog.Builder(this)
-        .setTitle("Delete Log")
-        .setMessage("Are you sure you want to delete this log?")
-        .setPositiveButton("Delete") { dialog: DialogInterface, which: Int ->
+        .setTitle("删除日志")
+        .setMessage("是否确认删除此日志？")
+        .setPositiveButton("删除") { dialog: DialogInterface, which: Int ->
             deleteLog(replayFileString ?: "")
             dialog.dismiss()
         }
-        .setNegativeButton("Cancel") { dialog: DialogInterface, which: Int ->
+        .setNegativeButton("取消") { dialog: DialogInterface, which: Int ->
             dialog.dismiss()
         }.create())
     }
@@ -2772,7 +2769,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         val currentFile = File(Environment.getExternalStoragePublicDirectory("TelemetryLogs"), fileName)
 
         if (currentFile.delete()) {
-            Toast.makeText(this, "Log deleted successfully.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "日志成功删除", Toast.LENGTH_SHORT).show()
 
             val csvFileName = replaceExtension( fileName, ".csv")
             val currentFileCSV = File(Environment.getExternalStoragePublicDirectory("TelemetryLogs"), csvFileName)
@@ -2781,7 +2778,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
             switchToIdleState()
             replayFileString = null
         } else {
-            Toast.makeText(this, "Failed to delete log.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "删除日志失败", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -2805,7 +2802,7 @@ class MapsActivity : com.serenegiant.common.BaseActivity(), DataDecoder.Listener
         editText.setSelection(editText.text.length)
 
         this.showDialog(AlertDialog.Builder(this)
-        .setTitle("Enter launch point MSL altitude, m:")
+        .setTitle("输入起飞点MSL高度, m:")
         .setView(editText)
         .setPositiveButton("OK") { dialog: DialogInterface, which: Int ->
             val enteredNumber = editText.text.toString().toFloatOrNull()

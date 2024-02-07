@@ -90,8 +90,8 @@ class HorizonView @JvmOverloads constructor(
             it.drawPath(leftLinePath, planeLinePaint)
             it.drawPath(rightLinePath, planeLinePaint)
 
-            drawRP( canvas, 0.16f, "Roll", this.roll)
-            drawRP( canvas, 0.82f, "Pitch", this.pitch)
+            drawRP( canvas, 0.16f, "横滚", this.roll)
+            drawRP( canvas, 0.82f, "俯仰", this.pitch)
         }
     }
 
